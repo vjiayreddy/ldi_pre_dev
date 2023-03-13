@@ -1,0 +1,17 @@
+select {
+  margin-top: 10px;
+  height: 35px;
+  padding: 8px;
+  font-size: 10;
+}
+a{
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  background-color: #1976d2;
+  padding: 6px;
+  border-radius: 5px;
+  margin-right: 5px;
+}

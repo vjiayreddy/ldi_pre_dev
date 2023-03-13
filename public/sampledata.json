@@ -1,0 +1,38 @@
+[
+  {
+    "ilpn": "0009988989",
+    "gstn": "501234567",
+    "lot": "AMB3344ER",
+    "lotExpiration": "07/31/2024",
+    "serialNumber": "34567890",
+    "businessUnit": "TBD",
+    "businessProcess": "TBD",
+    "site": "TBD",
+    "QuarantineId": "TBD",
+    "lpnNumber": "TBD"
+  },
+  {
+    "ilpn": "0009988989",
+    "gstn": "501234567",
+    "lot": "AMB3344ER",
+    "lotExpiration": "07/31/2024",
+    "serialNumber": "34567890",
+    "businessUnit": "TBD",
+    "businessProcess": "TBD",
+    "site": "TBD",
+    "QuarantineId": "TBD",
+    "lpnNumber": "TBD"
+  },
+  {
+    "ilpn": "0009988989",
+    "gstn": "501234567",
+    "lot": "AMB3344ER",
+    "lotExpiration": "07/31/2024",
+    "serialNumber": "34567890",
+    "businessUnit": "TBD",
+    "businessProcess": "TBD",
+    "site": "TBD",
+    "QuarantineId": "TBD",
+    "lpnNumber": "TBD"
+  }
+]
