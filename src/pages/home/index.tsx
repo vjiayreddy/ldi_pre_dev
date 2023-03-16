@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { CSVLink } from "react-csv";
-import Papa from "papaparse";
 import ReactToPrint from "react-to-print";
 
 import {
@@ -35,6 +34,8 @@ import {
   createShelfRightTag,
   createBinTags,
   sectionTabs,
+  convertCsvFileToJson,
+  getTagsDataCsvWithMappingData,
 } from "../../utils";
 import CloseIcon from "@mui/icons-material/Close";
 import { getApiData, postData } from "../../apiService";
@@ -51,6 +52,7 @@ const DashboardPage = () => {
   const [rackTags, setRackTags] = React.useState<any>(null);
   const [file, setFile] = React.useState<any>(null);
   const [cvs, setCvs] = React.useState<any>([]);
+  const [extractedCSVData, setExtractedCSVData] = useState<any[]>([]);
   const [_leftSelfTag, setleftSelfTag] = React.useState<any>(null);
   const [_rightSelfTag, setRightSelfTag] = React.useState<any>(null);
   const [_binTags, setBinTags] = React.useState<any[]>([]);
@@ -103,12 +105,7 @@ const DashboardPage = () => {
     createTackTags(rackTag, setRackTags);
     createShelfLeftTag(leftShelfTag, setleftSelfTag);
     createShelfRightTag(rightShelfTag, setRightSelfTag);
-    createBinTags(
-      binTagStartRange,
-      binTagEndRange,
-      setBinTags,
-      mapping?.binMapping
-    );
+    createBinTags(binTagStartRange, binTagEndRange, setBinTags);
     setShowModel(true);
   };
 
@@ -313,16 +310,7 @@ const DashboardPage = () => {
                   </Grid>
                 </Grid>
 
-                <Box mt={2} mb={2}>
-                  <Button
-                    onClick={onGetFormValues}
-                    color="warning"
-                    variant="contained"
-                    size="small"
-                  >
-                    Download Tags
-                  </Button>
-                </Box>
+                <Box mt={2} mb={2}></Box>
 
                 <Divider />
 
@@ -347,17 +335,27 @@ const DashboardPage = () => {
                     >
                       Download Mapping File
                     </CSVLink>
+                    <Button
+                      disableElevation
+                      onClick={onGetFormValues}
+                      color="warning"
+                      variant="contained"
+                      size="small"
+                    >
+                      Download Tags
+                    </Button>
                   </CardActions>
                 </Box>
                 <Box mt={2}>
                   <CardActions sx={{ paddingLeft: 0 }}>
                     <UiDropZone
                       onDrop={(acceptedFiles) => {
-                        Papa.parse(acceptedFiles[0], {
-                          complete: function (results) {
-                            setFile(acceptedFiles[0]);
-                          },
-                        });
+                        setFile(acceptedFiles[0]);
+                        convertCsvFileToJson(
+                          acceptedFiles,
+                          setExtractedCSVData,
+                          mapping?.binMapping
+                        );
                       }}
                     />
                   </CardActions>
@@ -748,7 +746,16 @@ const DashboardPage = () => {
                             textAlign="center"
                             variant="caption"
                           >
-                            <b>No:{item.binId}</b>
+                            <b>
+                              No:
+                              {
+                                getTagsDataCsvWithMappingData(
+                                  mapping?.binMapping,
+                                  extractedCSVData,
+                                  index
+                                )?.binId
+                              }
+                            </b>
                           </Typography>
                           <Typography
                             fontSize="11px"
@@ -756,7 +763,16 @@ const DashboardPage = () => {
                             textAlign="center"
                             variant="caption"
                           >
-                            <b>Name:{item.productName}</b>
+                            <b>
+                              Name:
+                              {
+                                getTagsDataCsvWithMappingData(
+                                  mapping?.binMapping,
+                                  extractedCSVData,
+                                  index
+                                )?.productName
+                              }
+                            </b>
                           </Typography>
                           <Typography
                             fontSize="11px"
@@ -764,11 +780,20 @@ const DashboardPage = () => {
                             textAlign="center"
                             variant="caption"
                           >
-                            <b>MV TAG ID:{item.tagId}</b>
+                            <b>
+                              MV TAG ID:
+                              {
+                                getTagsDataCsvWithMappingData(
+                                  mapping?.binMapping,
+                                  extractedCSVData,
+                                  index
+                                )?.tagId
+                              }
+                            </b>
                           </Typography>
                         </Grid>
                         <Grid textAlign="center" item md={6}>
-                          <img src={item?.url} alt="left-shelf-tag" />
+                          <img src={item} alt="left-shelf-tag" />
                         </Grid>
                       </Grid>
                     </Box>

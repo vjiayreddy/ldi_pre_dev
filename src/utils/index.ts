@@ -1,3 +1,5 @@
+import Papa from "papaparse";
+
 export const sectionTabs = [
   "2 Bin System",
   "Single Bin",
@@ -1542,10 +1544,8 @@ export const createShelfRightTag = (
 export const createBinTags = (
   binTagStartRange: any,
   binTagEndRange: any,
-  setBinTags: any,
-  oldBinTagsData: any[]
+  setBinTags: any
 ) => {
-  debugger;
   let binTags = [];
   let imageurl = null;
   for (let i = Number(binTagStartRange); i < Number(binTagEndRange); i++) {
@@ -1565,24 +1565,68 @@ export const createBinTags = (
       imageurl = `http://192.168.192.120:8081/tag-images/bin/tag49_12_${i}.png`;
       binTags.push(imageurl);
     }
-    if (oldBinTagsData?.length > 0) {
-      const _findMappingItem = oldBinTagsData.find(
-        (item: any) => item.tagId === i
-      );
-      if (_findMappingItem) {
-        binTags.push({
-          ..._findMappingItem,
-          url: imageurl,
-        });
-      }
-    } else {
-      binTags.push({
-        tagId: i,
-        binId: "-",
-        productName: "-",
-        url: imageurl,
-      });
-    }
   }
   setBinTags(binTags);
+};
+
+export const convertCsvFileToJson = (
+  acceptedFiles: any,
+  setExtractedCSVData: any,
+  oldBinMappingData: any
+) => {
+  const csvToJson: any[] = [];
+  Papa.parse(acceptedFiles[0], {
+    complete: function (results) {
+      const _csvExtractedData: any = results.data?.splice(
+        1,
+        results.data.length - 1
+      );
+      if (_csvExtractedData?.length > 0) {
+        _csvExtractedData.map((item: any) => {
+          if (oldBinMappingData?.length > 0) {
+            const _findRecord = oldBinMappingData.find(
+              (i: any) => i.tagId === Number(item[0])
+            );
+            if (_findRecord) {
+              csvToJson.push({
+                ..._findRecord,
+                tagId: Number(item[0]),
+                binId: item[1],
+                productName: item[2],
+              });
+            } else {
+              csvToJson.push({
+                tagId: Number(item[0]),
+                binId: item[1],
+                productName: item[2],
+              });
+            }
+          } else {
+            csvToJson.push({
+              tagId: Number(item[0]),
+              binId: item[1],
+              productName: item[2],
+            });
+          }
+        });
+      }
+    },
+  });
+  setExtractedCSVData(csvToJson);
+};
+
+export const getTagsDataCsvWithMappingData = (
+  oldBinData: any[],
+  csvJsonData: any[],
+  tagId: any
+) => {
+  let findRecord: any = null;
+  if (csvJsonData?.length > 0) {
+    findRecord = csvJsonData.find((item) => item.tagId === Number(tagId));
+  } else {
+    if (oldBinData?.length > 0) {
+      findRecord = oldBinData.find((item) => item.tagId === Number(tagId));
+    }
+  }
+  return findRecord;
 };
