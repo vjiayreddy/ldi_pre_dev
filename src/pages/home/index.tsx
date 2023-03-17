@@ -32,21 +32,37 @@ import {
   createTackTags,
   createShelfLeftTag,
   createShelfRightTag,
-  createBinTags,
   sectionTabs,
   convertCsvFileToJson,
-  getTagsDataCsvWithMappingData,
+  generateBinTags,
 } from "../../utils";
 import CloseIcon from "@mui/icons-material/Close";
-import { getApiData, postData } from "../../apiService";
+import { getApiData, postData, postApiData } from "../../apiService";
 import UiDropZone from "../../components/ui/UiDropZone";
+import { _dataMapping } from "../../utils/binMapping";
 
 const baseUrl = "http://192.168.192.120:8081";
 const postUrl = "/updateConfig";
+const updateItemMapping = "/updateItemMapping";
+
+const headers = [
+  { label: "MV Tag Id", key: "tagId" },
+  { label: "Bin Serial", key: "binId" },
+  { label: "Name", key: "productName" },
+];
+
+const StyledHeadingBox = styled(Box)(({ theme }) => ({
+  padding: 20,
+  fontWeight: "bold",
+  backgroundColor: "#1565c0",
+  color: "white",
+  marginBottom: 30,
+}));
 
 const DashboardPage = () => {
   const componentRef = useRef<any>();
-
+  const [isDownloadMapping, setIsDownloadMapping] = useState<boolean>(false);
+  const [isDownloadTags, setIsDownloadTags] = useState<boolean>(true);
   const { control, handleSubmit, reset, register, getValues, watch } =
     useForm();
   const [rackTags, setRackTags] = React.useState<any>(null);
@@ -63,55 +79,9 @@ const DashboardPage = () => {
   const [showMOdel, setShowModel] = React.useState<boolean>(false);
   const watchBinTags = watch(["binTagStartRange", "binTagEndRange"]);
 
-  const StyledHeadingBox = styled(Box)(({ theme }) => ({
-    padding: 20,
-    fontWeight: "bold",
-    backgroundColor: "#1565c0",
-    color: "white",
-    marginBottom: 30,
-  }));
-
-  const onSubmit = (data: any) => {
-    const payload = {
-      flipCamera: data.flipCamera === "true" ? true : false,
-      rackNo: data.rackNo,
-      sendDataEveryMinute: Number(data.sendDataEveryMinute),
-      sendDataEveryHour: Number(data.sendDataEveryHour),
-      name: data.name,
-      floorNo: Number(data.floorNo),
-      roomNo: Number(data?.roomNo),
-      rackTag: Number(data?.rackTag),
-      leftShelfTag: Number(data?.leftShelfTag),
-      rightShelfTag: Number(data?.rightShelfTag),
-      binTagStartRange: Number(data?.binTagStartRange),
-      binTagEndRange: Number(data?.binTagEndRange),
-      sendDataToServer: data?.sendDataToServer === "true" ? true : false,
-      useImageStabilization:
-        data?.useImageStabilization === "true" ? true : false,
-      timezone: data?.timezone,
-    };
-    postData(`${baseUrl}${postUrl}`, payload);
-  };
-
-  const onGetFormValues = () => {
-    const payload = getValues();
-    const {
-      rackTag,
-      leftShelfTag,
-      rightShelfTag,
-      binTagStartRange,
-      binTagEndRange,
-    } = payload;
-    createTackTags(rackTag, setRackTags);
-    createShelfLeftTag(leftShelfTag, setleftSelfTag);
-    createShelfRightTag(rightShelfTag, setRightSelfTag);
-    createBinTags(binTagStartRange, binTagEndRange, setBinTags);
-    setShowModel(true);
-  };
-
   useEffect(() => {
     getApiData(`${baseUrl}/getConfig`, setConfig, setIsLoading);
-    getApiData(`${baseUrl}/getItemMapping`, setMapping, setIsLoading);
+    getApiData(`${baseUrl}/getItemMapping`, setMapping, setIsDownloadTags);
   }, []);
 
   useEffect(() => {
@@ -120,20 +90,31 @@ const DashboardPage = () => {
     }
   }, [config]);
 
-  const headers = [
-    { label: "MV Tag Id", key: "tagId" },
-    { label: "Bin Serial", key: "binId" },
-    { label: "Name", key: "productName" },
-  ];
+  useEffect(() => {
+    if (watchBinTags) {
+      const getFormValues = getValues();
+      if (
+        getFormValues?.binTagStartRange &&
+        Number(getFormValues?.binTagStartRange) >= 0 &&
+        Number(getFormValues?.binTagEndRange) >
+          Number(getFormValues?.binTagStartRange)
+      ) {
+        setIsDownloadMapping(true);
+      } else {
+        setIsDownloadMapping(false);
+      }
+    }
+  }, [watchBinTags]);
 
   const generateTagsCount = (watchBinTags: any) => {
     let tagsData: any = [];
     const binTagStartRange = watchBinTags[0] ? Number(watchBinTags[0]) : 0;
     const binTagEndRange = watchBinTags[1] ? Number(watchBinTags[1]) : 0;
-    if (binTagStartRange >= 0 && binTagEndRange >= 0) {
+    if (binTagStartRange >= 0 && binTagEndRange > binTagStartRange) {
       for (let i = binTagStartRange; i < binTagEndRange; i++) {
         let payload = {};
         if (mapping) {
+          //const { binMapping } = mapping;
           const { binMapping } = mapping;
           const binData: any[] = binMapping;
           const _findMappingItem = binData.find(
@@ -161,6 +142,54 @@ const DashboardPage = () => {
     return setCvs(tagsData);
   };
 
+  const onSubmit = (data: any) => {
+    const payload = {
+      flipCamera: data.flipCamera === "true" ? true : false,
+      rackNo: data.rackNo,
+      sendDataEveryMinute: Number(data.sendDataEveryMinute),
+      sendDataEveryHour: Number(data.sendDataEveryHour),
+      name: data.name,
+      floorNo: Number(data.floorNo),
+      roomNo: Number(data?.roomNo),
+      rackTag: Number(data?.rackTag),
+      leftShelfTag: Number(data?.leftShelfTag),
+      rightShelfTag: Number(data?.rightShelfTag),
+      binTagStartRange: Number(data?.binTagStartRange),
+      binTagEndRange: Number(data?.binTagEndRange),
+      sendDataToServer: data?.sendDataToServer === "true" ? true : false,
+      useImageStabilization:
+        data?.useImageStabilization === "true" ? true : false,
+      timezone: data?.timezone,
+    };
+
+    postApiData(`${baseUrl}${postUrl}`, payload)
+      .then((res) => {
+        alert("Saved Successfully");
+      })
+      .catch((error) => {});
+    if (extractedCSVData?.length > 0) {
+      postApiData(`${baseUrl}${updateItemMapping}`, extractedCSVData).then(
+        (res) => {
+          getApiData(
+            `${baseUrl}/getItemMapping`,
+            setMapping,
+            setIsDownloadTags
+          );
+        }
+      );
+    }
+  };
+
+  const onGetFormValues = () => {
+    const payload = getValues();
+    const { rackTag, leftShelfTag, rightShelfTag } = payload;
+    createTackTags(rackTag, setRackTags);
+    createShelfLeftTag(leftShelfTag, setleftSelfTag);
+    createShelfRightTag(rightShelfTag, setRightSelfTag);
+    generateBinTags(mapping?.binMapping, setBinTags);
+    setShowModel(true);
+  };
+
   return (
     <>
       <StyledHeadingBox>
@@ -177,9 +206,11 @@ const DashboardPage = () => {
                   size="small"
                   control={control}
                   defaultValue=""
+                  isRequired={true}
                   id="INPUT_CUSTOMER_HOSPITAL"
                   label="Customer / Hospital"
                   name="name"
+                  rules={{ required: "Customer / Hospital is required" }}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -190,6 +221,8 @@ const DashboardPage = () => {
                   id="INPUT_ROOM_NO"
                   label="Room No"
                   name="roomNo"
+                  isRequired={true}
+                  rules={{ required: "Room number is required" }}
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
@@ -200,6 +233,7 @@ const DashboardPage = () => {
                   id="INPUT_FLOOR_NUMBER"
                   label="Floor Number"
                   name="floorNo"
+                  rules={{ required: "Floor Number is required" }}
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
@@ -207,6 +241,7 @@ const DashboardPage = () => {
                   size="small"
                   control={control}
                   defaultValue=""
+                  rules={{ required: "Rack Number is required" }}
                   id="INPUT_RACK_NUMBER"
                   label="Rack Number"
                   name="rackNo"
@@ -262,6 +297,19 @@ const DashboardPage = () => {
                       id="INPUT_RACK_TAGS"
                       label="Rack Tags(1-100)"
                       name="rackTag"
+                      isRequired={true}
+                      hintMessage="1 to 100"
+                      rules={{
+                        required: "Rack tag is required",
+                        validate: (value: string) => {
+                          if (Number(value) <= 0) {
+                            return "Rack tag must be graterthen 0";
+                          }
+                          if (Number(value) > 100) {
+                            return "Rack tag must  be below 100";
+                          }
+                        },
+                      }}
                     />
                   </Grid>
                   <Grid item xs={6} sm={4} md={4} lg={4} xl={4}>
@@ -273,6 +321,21 @@ const DashboardPage = () => {
                       id="INPUT_SELF_MARKET_TAG_LEFT"
                       label="Shelf/Marker Tag Left"
                       name="leftShelfTag"
+                      hintMessage="1 to 100"
+                      isRequired={true}
+                      rules={{
+                        required: "Shelf/Marker left tag is required",
+                        validate: (value: string) => {
+                          const selfMarkerTagRight = getValues("rightShelfTag");
+                          if (Number(value) <= 0) {
+                            return "Shelf/Marker left tag  must be graterthen 0";
+                          } else if (Number(value) >= 101) {
+                            return "Shelf/Marker left tag  should not graterthen 100";
+                          } else if (Number(value) >= selfMarkerTagRight) {
+                            return "Shelf/Marker left  tag  should not graterthen right tag";
+                          }
+                        },
+                      }}
                     />
                   </Grid>
                   <Grid item xs={6} sm={4} md={4} lg={4} xl={4}>
@@ -284,6 +347,21 @@ const DashboardPage = () => {
                       id="INPUT_SELF_MARKET_TAG_RIGHT"
                       label="Shelf/Marker Tag Right"
                       name="rightShelfTag"
+                      hintMessage="101 to 200"
+                      isRequired={true}
+                      rules={{
+                        required: "Shelf/Marker right tag  is required",
+                        validate: (value: string) => {
+                          const selfMarkerTagLeft = getValues("leftShelfTag");
+                          if (Number(value) <= 101) {
+                            return "Shelf/Marker right tag  must be graterthen 100";
+                          } else if (Number(value) > 200) {
+                            return "Shelf/Marker right tag  should not graterthen 200";
+                          } else if (Number(value) <= selfMarkerTagLeft) {
+                            return "Shelf/Marker right tag  should not less then left tag";
+                          }
+                        },
+                      }}
                     />
                   </Grid>
                   <Grid item xs={6} sm={4} md={4} lg={4} xl={4}>
@@ -292,9 +370,24 @@ const DashboardPage = () => {
                       fieldType="number"
                       control={control}
                       defaultValue=""
+                      isRequired={true}
                       id="INPUT_BIN_TAGS_MIX"
                       label="MV Tags ( Min)"
                       name="binTagStartRange"
+                      hintMessage="0 to 2023"
+                      rules={{
+                        required: "Min Mv Tag is required",
+                        validate: (value: string) => {
+                          const getMVtagMaxValue = getValues("binTagEndRange");
+                          if (Number(value) > 2023) {
+                            return "Min Mv Tag should not graterthen 2023";
+                          } else if (
+                            Number(value) >= Number(getMVtagMaxValue)
+                          ) {
+                            return "Min Mv Tag should not graterthen Max MV Tag";
+                          }
+                        },
+                      }}
                     />
                   </Grid>
                   <Grid item xs={6} sm={4} md={4} lg={4} xl={4}>
@@ -304,14 +397,28 @@ const DashboardPage = () => {
                       control={control}
                       defaultValue=""
                       id="INPUT_BIN_TAGS_MAX"
+                      isRequired={true}
                       label="MV Tags ( Max)"
                       name="binTagEndRange"
+                      hintMessage="0 to 2024"
+                      rules={{
+                        required: "Max Mv Tag is required",
+                        validate: (value: string) => {
+                          const getMVtagMinValue =
+                            getValues("binTagStartRange");
+                          if (Number(value) > 2024) {
+                            return "Max Mv Tag should not graterthen 2024";
+                          } else if (
+                            Number(value) <= Number(getMVtagMinValue)
+                          ) {
+                            return "Max Mv Tag should not less then Min MV Tag";
+                          }
+                        },
+                      }}
                     />
                   </Grid>
                 </Grid>
-
-                <Box mt={2} mb={2}></Box>
-
+                <Box mt={2}></Box>
                 <Divider />
 
                 <Box mt={2}>
@@ -325,17 +432,38 @@ const DashboardPage = () => {
                 </Box>
                 <Box mt={2}>
                   <CardActions sx={{ paddingLeft: 0 }}>
-                    <CSVLink
-                      headers={headers}
-                      data={cvs}
-                      onClick={() => {
-                        generateTagsCount(watchBinTags);
-                      }}
-                      filename="mappingFile.csv"
-                    >
-                      Download Mapping File
-                    </CSVLink>
+                    {isDownloadMapping ? (
+                      <CSVLink
+                        headers={headers}
+                        data={cvs}
+                        onClick={() => {
+                          generateTagsCount(watchBinTags);
+                        }}
+                        filename="mappingFile.csv"
+                      >
+                        Download Mapping File
+                      </CSVLink>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        sx={{
+                          textTransform: "none",
+                          textAlign: "center",
+                          textDecoration: "none",
+                          fontSize: "12px",
+                          height: "30px",
+                          fontWeight: "500",
+                          padding: "6px",
+                          borderRadius: "5px !important",
+                        }}
+                        disabled={true}
+                      >
+                        Download Mapping File
+                      </Button>
+                    )}
+
                     <Button
+                      disabled={mapping?.binMapping.length > 0 ? false : true}
                       disableElevation
                       onClick={onGetFormValues}
                       color="warning"
@@ -582,7 +710,7 @@ const DashboardPage = () => {
 
                     <Grid item>
                       <select {...register("sendDataEveryHour")}>
-                        {Array.from({ length: 11 }, (_, i) => i + 1).map(
+                        {Array.from({ length: 12 }, (_, i) => i).map(
                           (item, index) => (
                             <option key={index} value={item}>
                               {item}
@@ -594,7 +722,7 @@ const DashboardPage = () => {
                     <Grid item>:</Grid>
                     <Grid item>
                       <select {...register("sendDataEveryMinute")}>
-                        {Array.from({ length: 60 }, (_, i) => i + 1).map(
+                        {Array.from({ length: 61 }, (_, i) => i).map(
                           (item, index) => (
                             <option key={index} value={item}>
                               {item}
@@ -609,20 +737,19 @@ const DashboardPage = () => {
             )}
           </CardContent>
         </Card>
-        <Box mt={3}>
-          <CardActions sx={{ paddingLeft: 0, paddingTop: "15px" }}>
-            <Button
-              onClick={handleSubmit(onSubmit)}
-              variant="contained"
-              size="small"
-            >
-              Submit
-            </Button>
-            <Button variant="contained" color="error" size="small">
-              Cancel
-            </Button>
-          </CardActions>
-        </Box>
+        {(tabIndex === 0 || tabIndex === 3) && (
+          <Box mt={3}>
+            <CardActions sx={{ paddingLeft: 0, paddingTop: "0px" }}>
+              <Button
+                onClick={handleSubmit(onSubmit)}
+                variant="contained"
+                size="small"
+              >
+                Submit
+              </Button>
+            </CardActions>
+          </Box>
+        )}
       </Container>
       <Dialog
         fullScreen
@@ -738,7 +865,9 @@ const DashboardPage = () => {
                             variant="h5"
                             align="center"
                           >
-                            {index % 2 === 0 ? "A" : "B"}
+                            {item?.binId?.length > 0
+                              ? item?.binId.slice(-1)
+                              : "-"}
                           </Typography>
                           <Typography
                             fontSize="11px"
@@ -746,16 +875,7 @@ const DashboardPage = () => {
                             textAlign="center"
                             variant="caption"
                           >
-                            <b>
-                              No:
-                              {
-                                getTagsDataCsvWithMappingData(
-                                  mapping?.binMapping,
-                                  extractedCSVData,
-                                  index
-                                )?.binId
-                              }
-                            </b>
+                            <b>No:{item?.binId}</b>
                           </Typography>
                           <Typography
                             fontSize="11px"
@@ -765,13 +885,7 @@ const DashboardPage = () => {
                           >
                             <b>
                               Name:
-                              {
-                                getTagsDataCsvWithMappingData(
-                                  mapping?.binMapping,
-                                  extractedCSVData,
-                                  index
-                                )?.productName
-                              }
+                              {item?.productName}
                             </b>
                           </Typography>
                           <Typography
@@ -782,18 +896,12 @@ const DashboardPage = () => {
                           >
                             <b>
                               MV TAG ID:
-                              {
-                                getTagsDataCsvWithMappingData(
-                                  mapping?.binMapping,
-                                  extractedCSVData,
-                                  index
-                                )?.tagId
-                              }
+                              {item?.tagId}
                             </b>
                           </Typography>
                         </Grid>
                         <Grid textAlign="center" item md={6}>
-                          <img src={item} alt="left-shelf-tag" />
+                          <img src={item?.imageurl} alt="left-shelf-tag" />
                         </Grid>
                       </Grid>
                     </Box>

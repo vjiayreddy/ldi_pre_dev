@@ -1569,17 +1569,61 @@ export const createBinTags = (
   setBinTags(binTags);
 };
 
+export const generateBinTags = (binData: any[], setBinTags: any) => {
+  let binTags: any[] = [];
+  let imageurl = null;
+  debugger;
+  if (binData?.length > 0) {
+    binData.map((item) => {
+      if (Number(item?.tagId) < 10) {
+        imageurl = `http://192.168.192.120:8081/tag-images/bin/tag49_12_0000${item?.tagId}.png`;
+        binTags.push({
+          ...item,
+          imageurl,
+        });
+      } else if (Number(item?.tagId) >= 10 && Number(item?.tagId) <= 99) {
+        imageurl = `http://192.168.192.120:8081/tag-images/bin/tag49_12_000${item?.tagId}.png`;
+        binTags.push({
+          ...item,
+          imageurl,
+        });
+      } else if (Number(item?.tagId) >= 100 && Number(item?.tagId) <= 999) {
+        imageurl = `http://192.168.192.120:8081/tag-images/bin/tag49_12_00${item?.tagId}.png`;
+        binTags.push({
+          ...item,
+          imageurl,
+        });
+      } else if (Number(item?.tagId) >= 1000 && Number(item?.tagId) <= 9999) {
+        imageurl = `http://192.168.192.120:8081/tag-images/bin/tag49_12_0${item?.tagId}.png`;
+        binTags.push({
+          ...item,
+          imageurl,
+        });
+      } else {
+        imageurl = `http://192.168.192.120:8081/tag-images/bin/tag49_12_${item?.tagId}.png`;
+        binTags.push({
+          ...item,
+          imageurl,
+        });
+      }
+    });
+    console.log(setBinTags);
+    setBinTags(binTags);
+  }
+};
+
 export const convertCsvFileToJson = (
   acceptedFiles: any,
   setExtractedCSVData: any,
   oldBinMappingData: any
 ) => {
   const csvToJson: any[] = [];
+  console.log(oldBinMappingData);
   Papa.parse(acceptedFiles[0], {
     complete: function (results) {
       const _csvExtractedData: any = results.data?.splice(
         1,
-        results.data.length - 1
+        results.data.length - 2
       );
       if (_csvExtractedData?.length > 0) {
         _csvExtractedData.map((item: any) => {
@@ -1591,8 +1635,9 @@ export const convertCsvFileToJson = (
               csvToJson.push({
                 ..._findRecord,
                 tagId: Number(item[0]),
-                binId: item[1],
-                productName: item[2],
+                binId: item[1].length > 0 ? item[1] : _findRecord.binId,
+                productName:
+                  item[2].length > 0 ? item[2] : _findRecord.productName,
               });
             } else {
               csvToJson.push({
@@ -1612,6 +1657,7 @@ export const convertCsvFileToJson = (
       }
     },
   });
+  console.log(csvToJson);
   setExtractedCSVData(csvToJson);
 };
 

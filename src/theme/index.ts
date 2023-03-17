@@ -11,6 +11,10 @@ export const theme = createTheme({
         elevation: 0,
       },
       styleOverrides: {
+        positionSticky: {
+          backgroundColor: COLORS.white,
+          borderBottom: `1px solid ${COLORS.border}`,
+        },
         positionStatic: {
           backgroundColor: COLORS.white,
           borderBottom: `1px solid ${COLORS.border}`,
@@ -38,12 +42,12 @@ export const theme = createTheme({
         },
       },
     },
-    MuiTab:{
-     styleOverrides:{
-      root:{
-        textTransform:"none"
-      }
-     }
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          textTransform: "none",
+        },
+      },
     },
     MuiInputBase: {
       defaultProps: {
@@ -55,10 +59,10 @@ export const theme = createTheme({
           borderRadius: 0,
           border: `1px solid rgba(224, 224, 224, 1)`,
           "&.Mui-focused": {
-           // border: `1px solid ${APP_COLORS.ROOT_DIVIDER_COLOR}`,
+            // border: `1px solid ${APP_COLORS.ROOT_DIVIDER_COLOR}`,
           },
           "&.Mui-error": {
-           // border: `1px solid ${defaultTheme.palette.error.main}`,
+            // border: `1px solid ${defaultTheme.palette.error.main}`,
           },
           backgroundColor: defaultTheme.palette.common.white,
         },

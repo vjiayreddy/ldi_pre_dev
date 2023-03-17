@@ -13,7 +13,8 @@ const StyledMainRootContainer = styled(Container)(({ theme }) => ({
   overflow: "auto",
   display: "flex",
   flexDirection: "column",
-  backgroundColor:'#FAFAFA',
+  paddingBottom:50,
+  backgroundColor: "#FAFAFA",
   minHeight: `calc(100vh - 65px)`,
   [theme.breakpoints.down("sm")]: {
     minHeight: `calc(100vh - 57px)`,
@@ -23,10 +24,13 @@ const StyledMainRootContainer = styled(Container)(({ theme }) => ({
 const DefaultLayout = ({ children }: DefaultLayoutProps) => {
   return (
     <React.Fragment>
-      <AppBar sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <AppBar
+        position="sticky"
+        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+      >
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            <img  alt="logo" width={150} src={Logo} />
+            <img alt="logo" width={150} src={Logo} />
           </Toolbar>
         </Container>
       </AppBar>
