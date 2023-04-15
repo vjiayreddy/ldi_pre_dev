@@ -1,5 +1,7 @@
 import Papa from "papaparse";
-
+const localUrl = "http://192.168.192.120:8081";
+const selfUrl = "";
+const baseUrl = selfUrl
 export const sectionTabs = [
   "2 Bin System",
   "Single Bin",
@@ -1502,26 +1504,26 @@ export const countries = [
 
 export const createTackTags = (rackTag: any, setRackTags: any) => {
   if (Number(rackTag) < 10) {
-    const imageurl = `http://192.168.192.120:8081/tag-images/rack/tag36_11_0000${rackTag}.png`;
+    const imageurl = `${baseUrl}/tag-images/rack/tag36_11_0000${rackTag}.png`;
     setRackTags(imageurl);
   } else if (Number(rackTag) >= 10 && Number(rackTag) <= 99) {
-    const imageurl = `http://192.168.192.120:8081/tag-images/rack/tag36_11_000${rackTag}.png`;
+    const imageurl = `${baseUrl}/tag-images/rack/tag36_11_000${rackTag}.png`;
     setRackTags(imageurl);
   } else {
-    const imageurl = `http://192.168.192.120:8081/tag-images/rack/tag36_11_00${rackTag}.png`;
+    const imageurl = `${baseUrl}/tag-images/rack/tag36_11_00${rackTag}.png`;
     setRackTags(imageurl);
   }
 };
 
 export const createShelfLeftTag = (leftShelfTag: any, setleftSelfTag: any) => {
   if (Number(leftShelfTag) < 10) {
-    const imageurl = `http://192.168.192.120:8081/tag-images//shelf/tag25_09_0000${leftShelfTag}.png`;
+    const imageurl = `${baseUrl}/tag-images//shelf/tag25_09_0000${leftShelfTag}.png`;
     setleftSelfTag(imageurl);
   } else if (Number(leftShelfTag) >= 10 && Number(leftShelfTag) <= 99) {
-    const imageurl = `http://192.168.192.120:8081/tag-images//shelf/tag25_09_000${leftShelfTag}.png`;
+    const imageurl = `${baseUrl}/tag-images//shelf/tag25_09_000${leftShelfTag}.png`;
     setleftSelfTag(imageurl);
   } else {
-    const imageurl = `http://192.168.192.120:8081/tag-images//shelf/tag25_09_00${leftShelfTag}.png`;
+    const imageurl = `${baseUrl}/tag-images//shelf/tag25_09_00${leftShelfTag}.png`;
     setleftSelfTag(imageurl);
   }
 };
@@ -1531,13 +1533,13 @@ export const createShelfRightTag = (
   setRightSelfTag: any
 ) => {
   if (Number(rightShelfTag) < 10) {
-    const imageurl = `http://192.168.192.120:8081/tag-images//shelf/tag25_09_0000${rightShelfTag}.png`;
+    const imageurl = `${baseUrl}/tag-images//shelf/tag25_09_0000${rightShelfTag}.png`;
     setRightSelfTag(imageurl);
   } else if (Number(rightShelfTag) >= 10 && Number(rightShelfTag) <= 99) {
-    const imageurl = `http://192.168.192.120:8081/tag-images//shelf/tag25_09_000${rightShelfTag}.png`;
+    const imageurl = `${baseUrl}/tag-images//shelf/tag25_09_000${rightShelfTag}.png`;
     setRightSelfTag(imageurl);
   } else {
-    const imageurl = `http://192.168.192.120:8081/tag-images//shelf/tag25_09_00${rightShelfTag}.png`;
+    const imageurl = `${baseUrl}/tag-images//shelf/tag25_09_00${rightShelfTag}.png`;
     setRightSelfTag(imageurl);
   }
 };
@@ -1550,19 +1552,19 @@ export const createBinTags = (
   let imageurl = null;
   for (let i = Number(binTagStartRange); i < Number(binTagEndRange); i++) {
     if (Number(i) < 10) {
-      imageurl = `http://192.168.192.120:8081/tag-images/bin/tag49_12_0000${i}.png`;
+      imageurl = `${baseUrl}/tag-images/bin/tag49_12_0000${i}.png`;
       binTags.push(imageurl);
     } else if (Number(i) >= 10 && Number(i) <= 99) {
-      imageurl = `http://192.168.192.120:8081/tag-images/bin/tag49_12_000${i}.png`;
+      imageurl = `${baseUrl}/tag-images/bin/tag49_12_000${i}.png`;
       binTags.push(imageurl);
     } else if (Number(i) >= 100 && Number(i) <= 999) {
-      imageurl = `http://192.168.192.120:8081/tag-images/bin/tag49_12_00${i}.png`;
+      imageurl = `${baseUrl}/tag-images/bin/tag49_12_00${i}.png`;
       binTags.push(imageurl);
     } else if (Number(i) >= 1000 && Number(i) <= 9999) {
-      imageurl = `http://192.168.192.120:8081/tag-images/bin/tag49_12_0${i}.png`;
+      imageurl = `${baseUrl}/tag-images/bin/tag49_12_0${i}.png`;
       binTags.push(imageurl);
     } else {
-      imageurl = `http://192.168.192.120:8081/tag-images/bin/tag49_12_${i}.png`;
+      imageurl = `${baseUrl}/tag-images/bin/tag49_12_${i}.png`;
       binTags.push(imageurl);
     }
   }
@@ -1576,31 +1578,31 @@ export const generateBinTags = (binData: any[], setBinTags: any) => {
   if (binData?.length > 0) {
     binData.map((item) => {
       if (Number(item?.tagId) < 10) {
-        imageurl = `http://192.168.192.120:8081/tag-images/bin/tag49_12_0000${item?.tagId}.png`;
+        imageurl = `${baseUrl}/tag-images/bin/tag49_12_0000${item?.tagId}.png`;
         binTags.push({
           ...item,
           imageurl,
         });
       } else if (Number(item?.tagId) >= 10 && Number(item?.tagId) <= 99) {
-        imageurl = `http://192.168.192.120:8081/tag-images/bin/tag49_12_000${item?.tagId}.png`;
+        imageurl = `${baseUrl}/tag-images/bin/tag49_12_000${item?.tagId}.png`;
         binTags.push({
           ...item,
           imageurl,
         });
       } else if (Number(item?.tagId) >= 100 && Number(item?.tagId) <= 999) {
-        imageurl = `http://192.168.192.120:8081/tag-images/bin/tag49_12_00${item?.tagId}.png`;
+        imageurl = `${baseUrl}/tag-images/bin/tag49_12_00${item?.tagId}.png`;
         binTags.push({
           ...item,
           imageurl,
         });
       } else if (Number(item?.tagId) >= 1000 && Number(item?.tagId) <= 9999) {
-        imageurl = `http://192.168.192.120:8081/tag-images/bin/tag49_12_0${item?.tagId}.png`;
+        imageurl = `${baseUrl}/tag-images/bin/tag49_12_0${item?.tagId}.png`;
         binTags.push({
           ...item,
           imageurl,
         });
       } else {
-        imageurl = `http://192.168.192.120:8081/tag-images/bin/tag49_12_${item?.tagId}.png`;
+        imageurl = `${baseUrl}/tag-images/bin/tag49_12_${item?.tagId}.png`;
         binTags.push({
           ...item,
           imageurl,

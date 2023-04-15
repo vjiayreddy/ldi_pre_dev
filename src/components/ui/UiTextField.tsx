@@ -19,6 +19,7 @@ const StyledInpuLabel = styled(InputLabel)(({ theme }) => ({
 
 export interface UiFormTextFieldProps extends InputBaseProps {
   id: string;
+  size?: "small" | "medium";
   label?: string;
   name: string;
   control?: Control<FieldValues, object>;
@@ -32,6 +33,7 @@ export interface UiFormTextFieldProps extends InputBaseProps {
 
 export interface UiFormTextFieldProps extends InputBaseProps {
   id: string;
+  size?: "small" | "medium";
   label?: string;
   name: string;
   control?: Control<FieldValues, object>;
@@ -46,6 +48,7 @@ export interface UiFormTextFieldProps extends InputBaseProps {
 const UiFormTextField = ({
   id,
   name,
+  size,
   control,
   rules,
   defaultValue,

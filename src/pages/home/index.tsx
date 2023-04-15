@@ -43,7 +43,9 @@ import UiDropZone from "../../components/ui/UiDropZone";
 import { _dataMapping } from "../../utils/binMapping";
 import UiAutocompletedInputForm from "../../components/ui/UiFormAutocomplete";
 
-const baseUrl = "http://192.168.192.120:8081";
+const localUrl = "http://192.168.192.120:8081";
+const selfUrl = "";
+const baseUrl = selfUrl;
 const postUrl = "/updateConfig";
 const updateItemMapping = "/updateItemMapping";
 
@@ -296,10 +298,10 @@ const DashboardPage = () => {
                       defaultValue=""
                       fieldType="number"
                       id="INPUT_RACK_TAGS"
-                      label="Rack Tags(1-100)"
+                      label="Rack Tags(1-586)"
                       name="rackTag"
                       isRequired={true}
-                      hintMessage="1 to 100"
+                      hintMessage="1 to 586"
                       rules={{
                         required: "Rack tag is required",
                         validate: (value: string) => {
@@ -322,7 +324,7 @@ const DashboardPage = () => {
                       id="INPUT_SELF_MARKET_TAG_LEFT"
                       label="Shelf/Marker Tag Left"
                       name="leftShelfTag"
-                      hintMessage="1 to 100"
+                      hintMessage="1 to 17"
                       isRequired={true}
                       rules={{
                         required: "Shelf/Marker left tag is required",
@@ -348,7 +350,7 @@ const DashboardPage = () => {
                       id="INPUT_SELF_MARKET_TAG_RIGHT"
                       label="Shelf/Marker Tag Right"
                       name="rightShelfTag"
-                      hintMessage="101 to 200"
+                      hintMessage="18 to 34"
                       isRequired={true}
                       rules={{
                         required: "Shelf/Marker right tag  is required",
@@ -356,8 +358,8 @@ const DashboardPage = () => {
                           const selfMarkerTagLeft = getValues("leftShelfTag");
                           if (Number(value) < 18) {
                             return "Shelf/Marker right tag  must be grater then 17";
-                          } else if (Number(value) > 36) {
-                            return "Shelf/Marker right tag  should not grater then 36";
+                          } else if (Number(value) > 34) {
+                            return "Shelf/Marker right tag  should not grater then 34";
                           } else if (Number(value) <= selfMarkerTagLeft) {
                             return "Shelf/Marker right tag  should not less then left tag";
                           }
@@ -375,13 +377,13 @@ const DashboardPage = () => {
                       id="INPUT_BIN_TAGS_MIX"
                       label="MV Tags ( Min)"
                       name="binTagStartRange"
-                      hintMessage="0 to 2023"
+                      hintMessage="0 to 23999"
                       rules={{
                         required: "Min Mv Tag is required",
                         validate: (value: string) => {
                           const getMVtagMaxValue = getValues("binTagEndRange");
-                          if (Number(value) > 2023) {
-                            return "Min Mv Tag should not graterthen 2023";
+                          if (Number(value) > 23999) {
+                            return "Min Mv Tag should not graterthen 23999";
                           } else if (
                             Number(value) >= Number(getMVtagMaxValue)
                           ) {
@@ -401,14 +403,14 @@ const DashboardPage = () => {
                       isRequired={true}
                       label="MV Tags ( Max)"
                       name="binTagEndRange"
-                      hintMessage="0 to 2024"
+                      hintMessage="0 to 24000"
                       rules={{
                         required: "Max Mv Tag is required",
                         validate: (value: string) => {
                           const getMVtagMinValue =
                             getValues("binTagStartRange");
-                          if (Number(value) > 2024) {
-                            return "Max Mv Tag should not graterthen 2024";
+                          if (Number(value) > 24000) {
+                            return "Max Mv Tag should not graterthen 24000";
                           } else if (
                             Number(value) <= Number(getMVtagMinValue)
                           ) {
