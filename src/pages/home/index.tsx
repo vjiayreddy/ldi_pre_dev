@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CSVLink } from "react-csv";
 import ReactToPrint from "react-to-print";
-
 import {
   Box,
   styled,
@@ -75,7 +74,7 @@ const DashboardPage = () => {
   const [_rightSelfTag, setRightSelfTag] = React.useState<any>(null);
   const [_binTags, setBinTags] = React.useState<any[]>([]);
   const [tabIndex, setTabIndex] = React.useState(0);
-  const [config, setConfig] = React.useState(null);
+  const [config, setConfig] = React.useState<any>(null);
   const [mapping, setMapping] = React.useState<any>(null);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [showMOdel, setShowModel] = React.useState<boolean>(false);
@@ -88,7 +87,16 @@ const DashboardPage = () => {
 
   useEffect(() => {
     if (config) {
-      reset(config);
+      if (config?.timezone) {
+        const _findTimeZone = countries.find(
+          (item) => item?.timezones[0] === config?.timezone
+        );
+        if (_findTimeZone) {
+          reset({ ...config, timezone: _findTimeZone });
+        } else {
+          reset(config);
+        }
+      }
     }
   }, [config]);
 
