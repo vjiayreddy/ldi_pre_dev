@@ -35,11 +35,13 @@ import {
   sectionTabs,
   convertCsvFileToJson,
   generateBinTags,
+  alphabeticallyOrder,
 } from "../../utils";
 import CloseIcon from "@mui/icons-material/Close";
 import { getApiData, postData, postApiData } from "../../apiService";
 import UiDropZone from "../../components/ui/UiDropZone";
 import { _dataMapping } from "../../utils/binMapping";
+import UiAutocompletedInputForm from "../../components/ui/UiFormAutocomplete";
 
 const baseUrl = "http://192.168.192.120:8081";
 const postUrl = "/updateConfig";
@@ -161,7 +163,6 @@ const DashboardPage = () => {
         data?.useImageStabilization === "true" ? true : false,
       timezone: data?.timezone,
     };
-
     postApiData(`${baseUrl}${postUrl}`, payload)
       .then((res) => {
         alert("Saved Successfully");
@@ -541,23 +542,22 @@ const DashboardPage = () => {
                     </Grid>
                   </Grid>
                   <Grid container spacing={2} alignItems="center">
-                    <Grid item xs={12}>
-                      <InputLabel
-                        sx={{
-                          fontSize: 12,
-                          fontWeight: 800,
-                          color: "rgba(0, 0, 0, 0.6)",
+                    <Grid mb={1} item xs={12}>
+                      <UiAutocompletedInputForm
+                        targetValue="name"
+                        defaultValue={{
+                          timezones: ["America/New_York"],
+                          code: "US",
+                          continent: "North America",
+                          name: "United States",
+                          capital: "Washington, D.C.",
                         }}
-                      >
-                        Time Zone
-                      </InputLabel>
-                      <select {...register("timezone")}>
-                        {countries.map((item, index) => (
-                          <option key={index} value={item.timezones[0]}>
-                            {item.timezones[0]}
-                          </option>
-                        ))}
-                      </select>
+                        label="Time Zone"
+                        options={alphabeticallyOrder(countries)}
+                        control={control}
+                        id="time-zone"
+                        name="timezone"
+                      />
                     </Grid>
                   </Grid>
                   <Grid container alignItems="center" item xs={12}>
