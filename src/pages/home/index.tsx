@@ -312,10 +312,10 @@ const DashboardPage = () => {
                         required: "Rack tag is required",
                         validate: (value: string) => {
                           if (Number(value) <= 0) {
-                            return "Rack tag must be graterthen 0";
+                            return "Rack tag must be grater then 0";
                           }
-                          if (Number(value) > 100) {
-                            return "Rack tag must  be below 100";
+                          if (Number(value) > 586) {
+                            return "Rack tag must be below 586";
                           }
                         },
                       }}
@@ -336,12 +336,12 @@ const DashboardPage = () => {
                         required: "Shelf/Marker left tag is required",
                         validate: (value: string) => {
                           const selfMarkerTagRight = getValues("rightShelfTag");
-                          if (Number(value) <= 0) {
-                            return "Shelf/Marker left tag  must be graterthen 0";
-                          } else if (Number(value) >= 101) {
-                            return "Shelf/Marker left tag  should not graterthen 100";
+                          if (Number(value) < 0) {
+                            return "Shelf/Marker left tag  must be grater then 0";
+                          } else if (Number(value) > 17) {
+                            return "Shelf/Marker left tag  should not grater then 17";
                           } else if (Number(value) >= selfMarkerTagRight) {
-                            return "Shelf/Marker left  tag  should not graterthen right tag";
+                            return "Shelf/Marker left  tag  should not grater then right tag";
                           }
                         },
                       }}
@@ -362,10 +362,10 @@ const DashboardPage = () => {
                         required: "Shelf/Marker right tag  is required",
                         validate: (value: string) => {
                           const selfMarkerTagLeft = getValues("leftShelfTag");
-                          if (Number(value) <= 101) {
-                            return "Shelf/Marker right tag  must be graterthen 100";
-                          } else if (Number(value) > 200) {
-                            return "Shelf/Marker right tag  should not graterthen 200";
+                          if (Number(value) < 18) {
+                            return "Shelf/Marker right tag  must be grater then 17";
+                          } else if (Number(value) > 36) {
+                            return "Shelf/Marker right tag  should not grater then 36";
                           } else if (Number(value) <= selfMarkerTagLeft) {
                             return "Shelf/Marker right tag  should not less then left tag";
                           }
