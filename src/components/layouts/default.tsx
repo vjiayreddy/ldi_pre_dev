@@ -3,7 +3,7 @@ import Toolbar from "@mui/material/Toolbar";
 import AppBar from "@mui/material/AppBar";
 import Container from "@mui/material/Container";
 import { styled } from "@mui/material/styles";
-import Logo from "../../cardinal.png";
+import Logo from "../../../public/cardinal.png";
 
 interface DefaultLayoutProps {
   children: React.ReactNode;
@@ -13,7 +13,7 @@ const StyledMainRootContainer = styled(Container)(({ theme }) => ({
   overflow: "auto",
   display: "flex",
   flexDirection: "column",
-  paddingBottom:50,
+  paddingBottom: 50,
   backgroundColor: "#FAFAFA",
   minHeight: `calc(100vh - 65px)`,
   [theme.breakpoints.down("sm")]: {
