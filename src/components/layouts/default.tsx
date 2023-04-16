@@ -3,7 +3,7 @@ import Toolbar from "@mui/material/Toolbar";
 import AppBar from "@mui/material/AppBar";
 import Container from "@mui/material/Container";
 import { styled } from "@mui/material/styles";
-import Logo from "../../../public/cardinal.png";
+import Logo from "../../../src/cardinal.png";
 
 interface DefaultLayoutProps {
   children: React.ReactNode;

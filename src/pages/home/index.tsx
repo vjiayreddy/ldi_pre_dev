@@ -42,7 +42,7 @@ import UiDropZone from "../../components/ui/UiDropZone";
 import { _dataMapping } from "../../utils/binMapping";
 import UiAutocompletedInputForm from "../../components/ui/UiFormAutocomplete";
 
-const localUrl = "http://192.168.192.120:8081";
+const host = "http://192.168.192.120:8081";
 const selfUrl = "";
 const baseUrl = selfUrl;
 const postUrl = "/updateConfig";
@@ -153,7 +153,11 @@ const DashboardPage = () => {
     }
     return setCvs(tagsData);
   };
-
+  const getTimeZoneString = (timeZone:any): string => {
+    if (timeZone) {
+      return timeZone.timezones[0]
+    } else return "America/New_York"
+  }
   const onSubmit = (data: any) => {
     const payload = {
       flipCamera: data.flipCamera === "true" ? true : false,
@@ -171,7 +175,7 @@ const DashboardPage = () => {
       sendDataToServer: data?.sendDataToServer === "true" ? true : false,
       useImageStabilization:
         data?.useImageStabilization === "true" ? true : false,
-      timezone: data?.timezone,
+      timezone: getTimeZoneString(data?.timezone),
     };
     postApiData(`${baseUrl}${postUrl}`, payload)
       .then((res) => {

@@ -1393,7 +1393,7 @@ export const countries = [
     code: "MD",
     continent: "Europe",
     name: "Moldova",
-    capital: "Chi\xc5\x9fin\xc4\x83u",
+    capital: "Chisinau",
   },
   {
     timezones: ["Europe/Monaco"],
